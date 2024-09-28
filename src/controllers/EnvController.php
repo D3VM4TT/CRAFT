@@ -3,6 +3,7 @@
 namespace boost\envadmin\controllers;
 
 use boost\envadmin\Plugin;
+use Craft;
 use craft\web\Controller;
 
 class EnvController extends Controller
@@ -19,23 +20,21 @@ class EnvController extends Controller
     public function actionIndex(): \yii\web\Response
     {
 
-        dd('test');
-//        /** @var SectionsService $sectionsService */
-//        $sectionsService = EnvAdmin::getInstance()->section;
-//
-//        $sections = $sectionsService->getSectionsByType($type);
-//        $columns = SectionSiteSettingsVueAdminTableHelper::columns();
-//        $tableData = SectionSiteSettingsVueAdminTableHelper::data($sections);
-//        $actions = Craft::$app->user->checkPermission(EnvAdmin::PERMISSION_CREATE) ?
-//            SectionSiteSettingsVueAdminTableHelper::actions() :
-//            false;
-//
-//        return $this->renderTemplate(self::PATH . '/site-settings.twig', [
-//            'tableData' => $tableData,
-//            'actions' => $actions,
-//            'columns' => $columns,
-//            'sectionTypes' => SectionTypes::getSectionTypes(),
-//        ]);
+        $envPath = Craft::getAlias('@root/.env');
+        $envContent = file_get_contents($envPath);
+
+// Process the contents (e.g., parse into key-value pairs)
+        $envLines = explode("\n", $envContent);
+        $envVars = [];
+
+        foreach ($envLines as $line) {
+            if (!empty($line) && strpos($line, '=') !== false) {
+                list($key, $value) = explode('=', $line, 2);
+                $envVars[$key] = $value;
+            }
+        }
+
+        dd($envVars);
     }
 
 }
